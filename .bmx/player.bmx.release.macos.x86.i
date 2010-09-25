@@ -39,6 +39,8 @@ Player^brl.blitz.Object{
 .score%&
 .bonusmencnt%&
 .bullets%&
+.current_level%&
+.kills%&
 -New%()="_bb_Player_New"
 -Delete%()="_bb_Player_Delete"
 +Create:Player()="_bb_Player_Create"

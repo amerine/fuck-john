@@ -54,14 +54,14 @@ ___bb_fuck_john_player:
 	push	%ebp
 	mov	%esp,%ebp
 	sub	$8,%esp
-	cmpl	$0,_28
-	je	_29
+	cmpl	$0,_30
+	je	_31
 	mov	$0,%eax
 	mov	%ebp,%esp
 	pop	%ebp
 	ret
-_29:
-	movl	$1,_28
+_31:
+	movl	$1,_30
 	call	___bb_blitz_blitz
 	call	___bb_appstub_appstub
 	call	___bb_audio_audio
@@ -102,8 +102,8 @@ _29:
 	movl	$_bb_Player,(%esp)
 	call	_bbObjectRegisterType
 	mov	$0,%eax
-	jmp	_18
-_18:
+	jmp	_20
+_20:
 	mov	%ebp,%esp
 	pop	%ebp
 	ret
@@ -119,9 +119,11 @@ __bb_Player_New:
 	movl	$0,8(%ebx)
 	movl	$0,12(%ebx)
 	movl	$3,16(%ebx)
+	movl	$1,20(%ebx)
+	movl	$0,24(%ebx)
 	mov	$0,%eax
-	jmp	_21
-_21:
+	jmp	_23
+_23:
 	add	$4,%esp
 	pop	%ebx
 	mov	%ebp,%esp
@@ -131,10 +133,10 @@ __bb_Player_Delete:
 	push	%ebp
 	mov	%esp,%ebp
 	sub	$8,%esp
-_24:
+_26:
 	mov	$0,%eax
-	jmp	_30
-_30:
+	jmp	_32
+_32:
 	mov	%ebp,%esp
 	pop	%ebp
 	ret
@@ -145,14 +147,14 @@ __bb_Player_Create:
 	movl	$_bb_Player,(%esp)
 	call	_bbObjectNew
 	movl	$0,8(%eax)
-	jmp	_26
-_26:
+	jmp	_28
+_28:
 	mov	%ebp,%esp
 	pop	%ebp
 	ret
 	.data	
 	.align	4
-_28:
+_30:
 	.long	0
 _8:
 	.asciz	"Player"
@@ -165,14 +167,18 @@ _11:
 _12:
 	.asciz	"bullets"
 _13:
-	.asciz	"New"
+	.asciz	"current_level"
 _14:
-	.asciz	"()i"
+	.asciz	"kills"
 _15:
-	.asciz	"Delete"
+	.asciz	"New"
 _16:
-	.asciz	"Create"
+	.asciz	"()i"
 _17:
+	.asciz	"Delete"
+_18:
+	.asciz	"Create"
+_19:
 	.asciz	"():Player"
 	.align	4
 _7:
@@ -190,17 +196,25 @@ _7:
 	.long	_12
 	.long	_10
 	.long	16
-	.long	6
+	.long	3
 	.long	_13
+	.long	_10
+	.long	20
+	.long	3
 	.long	_14
-	.long	16
+	.long	_10
+	.long	24
 	.long	6
 	.long	_15
-	.long	_14
+	.long	_16
+	.long	16
+	.long	6
+	.long	_17
+	.long	_16
 	.long	20
 	.long	7
-	.long	_16
-	.long	_17
+	.long	_18
+	.long	_19
 	.long	48
 	.long	0
 	.align	4
@@ -208,7 +222,7 @@ _bb_Player:
 	.long	_bbObjectClass
 	.long	_bbObjectFree
 	.long	_7
-	.long	20
+	.long	28
 	.long	__bb_Player_New
 	.long	__bb_Player_Delete
 	.long	_bbObjectToString

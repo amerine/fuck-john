@@ -7,6 +7,8 @@ Type Particle
 	Field xs#
 	Field ys#
 	Field r#,g#,b#
+	
+	Field image:TImage
 
 	' The New method is called whenever one of these objects is created. If
 	' the list hasn't yet been created, it's created here. The object is then
@@ -19,10 +21,11 @@ Type Particle
 		ParticleList.AddLast Self
 	End Method
 
-	Function Create:Particle (x, y)
+	Function Create:Particle (x, y, image)
 		p:Particle = New Particle
 		p.x = x
 		p.y = y
+		p.image = image
 		p.xs = Rnd (-4, 4)
 		p.ys = 0
 		p.r = Rand(255)
@@ -40,7 +43,8 @@ Type Particle
 				p.x = p.x + p.xs
 				p.y = p.y + p.ys
 				SetColor(p.r,p.g,p.b)
-				DrawRect p.x, p.y, 8, 8
+				'DrawRect p.x, p.y, 8, 8
+				DrawImage(p.image, p.x, p.y)
 				If p.y > GraphicsHeight () p = Null
 			Next
 		End Function
