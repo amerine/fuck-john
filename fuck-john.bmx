@@ -1,17 +1,18 @@
 Rem
 A wonderful twist on the classic game for the enjoyment of John Barry
 EndRem 
-
 Import "player.bmx"
 
 AppTitle = "Fuck You John"
+
+SeedRnd MilliSecs()
 
 Incbin "media/background.png"
 Incbin "media/crosshair.png"
 Incbin "media/score_box.png"
 Incbin "media/cloud-2.png"
 Incbin "media/jbarry.png"
-Incbin "media/flying-john.png"
+Incbin "media/flying-john-2.png"
 Incbin "media/purple_d.png"
 
 Incbin "media/blast.wav"
@@ -51,7 +52,7 @@ MainPlayer = Player.Create()
 'Game Vars
 Global max_levels = 10
 
-Graphics ScreenWidth,ScreenHeight,0,60,GRAPHICS_BACKBUFFER
+Graphics ScreenWidth,ScreenHeight,32,60,GRAPHICS_BACKBUFFER
 SetMaskColor 211,20,200
 HideMouse
 AutoImageFlags MASKEDIMAGE|FILTEREDIMAGE|MIPMAPPEDIMAGE
@@ -147,7 +148,7 @@ Function LoadMedia()
 	media_cloud      = LoadImage("incbin::media/cloud-2.png", -1)
 	media_jbarry_mug = LoadImage("incbin::media/jbarry.png", -1)
 	media_purple_d   = LoadImage("incbin::media/purple_d.png", -1)
-	media_flying_john = LoadAnimImage("incbin::media/flying-john.png", 165, 100, 0, 4)
+	media_flying_john = LoadAnimImage("incbin::media/flying-john-2.png", 165, 100, 0, 5)
 	
 	sound_blast = LoadSound("incbin::media/blast.wav")
 	sound_start_music = LoadSound("incbin::media/start_game.wav", SOUND_LOOP)
@@ -157,7 +158,7 @@ Function SetupBaddies()
 	If MainPlayer.kills < MainPlayer.current_level
 		If MainPlayer.currently_killing = False
 			For b=1 To MainPlayer.current_level
-				baddie.Create(Rand(100,ScreenWidth-100),Rand(100, ScreenHeight-100),media_flying_john,4)
+				baddie.Create(Rand(ScreenWidth/3, (ScreenWidth/3)*2),ScreenHeight-100,media_flying_john,5)
 			Next
 			MainPlayer.currently_killing = True
 		EndIf
@@ -208,6 +209,10 @@ Function PlayerInput()
 	If MainPlayer.kills = MainPlayer.current_level
 		ChangeLevel()
 	EndIf
+	
+	If MainPlayer.missed + MainPlayer.kills = MainPlayer.current_level
+		GameOver()
+	EndIf
 EndFunction
 
 Function DrawScore()
@@ -220,9 +225,33 @@ Function DrawScore()
 	Next
 EndFunction
 
+Function GameOver()
+	SetScale 4,5
+	game_over$ = "GAME OVER"
+	DrawText game_over, ScreenWidthMid-TextWidth(game_over)*2, ScreenHeightMid
+	SetScale 1,1
+	space_text$ = "Press Space to Start Over"
+	DrawText space_text, ScreenWidthMid-TextWidth(space_width), 450
+	If KeyHit(KEY_SPACE)
+		ResetGame()
+	EndIf
+EndFunction
+
+Function ResetGame()
+	MainPlayer.score = 0
+	MainPlayer.missed = 0
+	MainPlayer.kills = 0
+	MainPLayer.bullets = 3
+	MainPlayer.current_level=1
+	MainPlayer.currently_killing = False
+	SetupBaddies()
+EndFunction
+
 Function ChangeLevel()
+	MainPlayer.missed = 0
 	MainPlayer.kills = 0
 	MainPlayer.current_level:+1
+	MainPlayer.bullets = 3
 	MainPlayer.currently_killing = False
 	SetupBaddies()
 EndFunction
@@ -248,7 +277,6 @@ Function DrawObjects()
 EndFunction
 
 Function SetupClouds()
-	SeedRnd MilliSecs()
 	Local a
 	For a=0 Until Rand(3,7)
   		cloud.Create( Rand(-1000,0), Rand(340) )
@@ -287,11 +315,23 @@ Type Baddie
 	Field x#,y#,frame#,total_frames#
 	Field image:TImage
 	Field dir# = 1
+	Field speed:Float = 0.09
+	Field xs#, ys#
 	
 	Method Update()
 		If frame = total_frames-1 Then dir = -1
 		If frame = 0 Then dir = 1
 		frame:+dir
+		
+		ys = ys + speed
+		x = x + xs
+		y = y - ys
+		
+		If y < 0
+			BaddieList.remove(Self)
+			MainPlayer.missed:+1
+		EndIf
+	
 	EndMethod
 	
 	Method Draw()
@@ -305,6 +345,8 @@ Type Baddie
 		Local b:Baddie = New Baddie
 		b.x= x
 		b.y= y
+		b.xs = Rand(0,1)
+		b.ys = Rand(0,1)
 		b.frame = 0
 		b.image = image
 		b.total_frames = frames

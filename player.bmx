@@ -4,6 +4,7 @@ Type Player
 	Field bullets = 3
 	Field current_level = 1
 	Field kills = 0
+	Field missed = 0
 	Field currently_killing = False
 
 	Function Create:Player()
